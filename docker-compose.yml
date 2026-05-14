@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: agento
+      POSTGRES_PASSWORD: agento
+      POSTGRES_DB: agento
+    ports: ["5432:5432"]
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://agento:agento@db:5432/agento
+      REDIS_URL: redis://redis:6379/0
+    ports: ["8000:8000"]
+    depends_on: [db, redis]
+  worker:
+    build: ./backend
+    command: python worker.py
+    environment:
+      DATABASE_URL: postgresql+psycopg://agento:agento@db:5432/agento
+      REDIS_URL: redis://redis:6379/0
+    depends_on: [db, redis]
+  web:
+    build: ./frontend
+    ports: ["5173:5173"]
+    depends_on: [api]
