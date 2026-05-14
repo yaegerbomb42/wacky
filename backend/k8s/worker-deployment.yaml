@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-o-worker
+  namespace: agent-o
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: agent-o-worker } }
+  template:
+    metadata: { labels: { app: agent-o-worker } }
+    spec:
+      containers:
+      - name: worker
+        image: ghcr.io/example/agent-o-api:latest
+        command: ["python", "worker.py"]
